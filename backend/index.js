@@ -4,9 +4,12 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
 const axios = require('axios');
+// const { OpenAI } = require('openai');
 
 // Load environment variables
 require('dotenv').config();
+const apiKey = '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';
+// const openai = new OpenAI({ key: apiKey });
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,7 +55,16 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+// async function main() {
+//   const completion = await openai.completions.create({
+//     model: 'gpt-3.5-turbo',
+//     messages: [{ role: 'system', content: 'You are a helpful assistant.' }],
+//   });
 
+//   console.log(completion.choices[0].message);
+// }
+
+// main();
 // Function to fetch current weather
 const fetchWeather = async (location) => {
   const apiKey =
@@ -127,12 +139,24 @@ app.post('/users', async (req, res) => {
       return res.status(400).json({ message: 'Email already exists' });
     }
 
-    const newUser = new User({ useremail, location });
+    // Fetch weather data
+    const weatherData = await fetchWeather(location);
+
+    // Create a new user with weather data
+    const newUser = new User({
+      useremail,
+      location,
+      weatherData: [
+        {
+          weatherText: weatherData.description,
+          temperature: weatherData.temperature,
+        },
+      ],
+    });
+
     await newUser.save();
 
     // Send an email to the user with current weather
-    const weatherData = await fetchWeather(location);
-
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: useremail,
@@ -160,8 +184,28 @@ app.put('/users/:id/location', async (req, res) => {
       return res.status(400).json({ message: 'Location is required' });
     }
 
-    await User.findByIdAndUpdate(id, { location });
-    res.status(200).json({ message: 'Location updated' });
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.location = location;
+    await user.save();
+
+    const weatherData = await fetchWeather(location);
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.useremail,
+      subject: 'Weather Information',
+      text: `Hello, Weather for your updated location: ${location} :- \n\nWeather Report:\nDescription: ${weatherData.description}\nTemperature: ${weatherData.temperature}°C`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent to:', user.useremail);
+
+    res.status(200).json({ message: 'Location updated and email sent' });
   } catch (err) {
     console.error('Error updating location:', err);
     res.status(400).json({ message: err.message });
