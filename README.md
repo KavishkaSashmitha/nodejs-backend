@@ -64,7 +64,7 @@ You can access the Replit deployment [here]([https://replit.com/@your-username/y
 
 ### Vercel
 
-You can access the Vercel deployment [here](https://your-repo-name.vercel.app).
+You can access the Vercel deployment [here]([https://your-repo-name.vercel.app](https://nodejs-ffh0ti0c1-kavishkas-projects-2ce7c3fd.vercel.app/)).
 
 ## Technologies Used
 
