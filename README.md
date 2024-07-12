@@ -60,11 +60,11 @@ This application is deployed on Replit and Vercel.
 
 ### Replit
 
-You can access the Replit deployment [here]([https://replit.com/join/fdffwgsakh-kavishkasashmit]).
+You can access the Replit deployment [here](https://replit.com/join/fdffwgsakh-kavishkasashmit).
 
 ### Vercel
 
-You can access the Vercel deployment [here]([https://nodejs-ffh0ti0c1-kavishkas-projects-2ce7c3fd.vercel.app/]).
+You can access the Vercel deployment [here](https://nodejs-ffh0ti0c1-kavishkas-projects-2ce7c3fd.vercel.app/).
 
 ## Technologies Used
 
